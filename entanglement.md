@@ -3,7 +3,7 @@
 ## 1. Quantum Tunneling
 
 ### 1.1 Conceptual Overview
-Quantum tunneling is a phenomenon where a particle can cross a potential barrier even if its energy is less than the barrier height. Classically, this is forbidden, but in quantum mechanics, the wave nature of particles allows a non-zero probability for the particle to "tunnel" through.
+Quantum tunneling is a phenomenon where a particle can cross a potential barrier even if its energy is less than the barrier height. 
 
 **Scenario:** Two potential wells (boxes) separated by a finite potential barrier. An electron in one well may tunnel into the adjacent well.
 
@@ -48,11 +48,83 @@ $$
 
 ### 1.3 Physical Interpretation
 - The wavefunction "leaks" into the barrier, allowing the particle to appear on the other side.
-- Explains phenomena like:
-  - Alpha decay in nuclei
-  - Electron tunneling in semiconductors
-  - Scanning tunneling microscopy (STM)
 
+### Code
+```
+import numpy as np
+import plotly.graph_objects as go
+from scipy.linalg import expm
+
+
+L = 1.0     
+gap = 0.5    
+N = 40       
+
+x = np.linspace(0, 2*L + gap, N) 
+y = np.linspace(0, L, N)
+z = np.linspace(0, L, N)
+X, Y, Z = np.meshgrid(x, y, z, indexing='ij')
+
+
+def psi_box(X, center):
+    sigma = 0.25
+    return np.exp(-(X - center)**2 / (2*sigma**2))
+
+
+center_L = L/2
+center_R = L + gap + L/2
+
+psi_L = psi_box(X, center_L)
+psi_R = psi_box(X, center_R)
+
+tunnel = 0.3  
+H = np.array([[0, -tunnel],
+              [-tunnel, 0]]) 
+
+
+tau = 10.0  
+U = expm(-1j * H * tau)
+
+
+a, b = U @ np.array([1.0, 0.0])
+
+
+psi_total = np.abs(a*psi_L + b*psi_R)
+
+
+fig = go.Figure()
+
+fig.add_trace(go.Isosurface(
+    x=X.flatten(),
+    y=Y.flatten(),
+    z=Z.flatten(),
+    value=psi_total.flatten(),
+    isomin=0.05*np.max(psi_total), 
+    isomax=np.max(psi_total),
+    surface_count=3,
+    colorscale='Viridis',
+    opacity=0.6,
+    caps=dict(x_show=False, y_show=False, z_show=False)
+))
+
+# Layout
+fig.update_layout(
+    title=f" Tunneling (time t={tau})",
+    scene=dict(
+        xaxis_title='x',
+        yaxis_title='y',
+        zaxis_title='z',
+        aspectratio=dict(x=2.5, y=1, z=1)
+    )
+)
+
+fig.show()
+```
+### Output
+
+```
+<img width="752" height="334" alt="image" src="https://github.com/user-attachments/assets/f971adfd-9ba4-4e2e-853a-c08f517d8ccf" />
+```
 ---
 
 ## 2. Quantum Entanglement
@@ -60,10 +132,8 @@ $$
 ### 2.1 Conceptual Overview
 Entanglement is a quantum property where the states of two or more particles become correlated such that the state of one cannot be described independently of the others, even at large distances.
 
-**Example:** Two electrons in separate quantum dots may become entangled due to tunneling-mediated interaction.
-
 ### 2.2 Theoretical Explanation
-Consider two qubits (quantum bits) represented by states \(|0\rangle\) and \(|1\rangle\). An entangled state can be written as a **Bell state**:
+Consider two qubits (quantum bits) represented by states \(|0\rangle\) and \(|1\rangle\). An entangled state can be written as a 
 
 $$
 |\Phi^+\rangle = \frac{1}{\sqrt{2}} \left( |00\rangle + |11\rangle \right)
