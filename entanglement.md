@@ -122,9 +122,9 @@ fig.show()
 ```
 ### Output
 
-```
+
 <img width="752" height="334" alt="image" src="https://github.com/user-attachments/assets/f971adfd-9ba4-4e2e-853a-c08f517d8ccf" />
-```
+
 ---
 
 ## 2. Quantum Entanglement
